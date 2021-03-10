@@ -1,0 +1,139 @@
+
+CSIT 836
+Introduction to Data Structures
+Instructor: Jeff Kent
+Module #6 - Binary Search Tree
+Assignment #5 is another bribe program, like Assignment #4. Unlike Assignment #4, it does not involve linked lists, but instead binary search trees. Chapter 8 covers trees, and in particular binary search trees. This lecture will supplement the book. It is not a substitute for reading the book. There also is a PowerPoint presentation on recursion that you can download and recursion examples.
+
+The tree itself will be represented by the CTree class. The nodes on the tree will be represented by a PersonRec structure, which is similar but not identical to the structure of the same name you used in Assignment #4. Like Assignment #4, each node will be created by dynamic memory allocation and connected, though this time in a binary search tree rather than in a linked list.  Like Assignment #4, the node will not be automatically inserted at the beginning or end of the tree, but instead will be inserted in order of the amount of the bribe. As explained in Chapter 8 and as discussed below in adding a node to the tree, binary search trees are specialized binary trees in which the data value (here the bribe amount) of every node in the tree is greater than any data value in its left subtree and less than any data value in its right subtree.
+
+For those of you always asking for more examples, to give you more motivation to read the book, the CharTree class and TreeNode structure discussed in  the book are quite similar to the CTree class and PersonRec structure in this assignment, and the book contains a substantial amount of code for the CharTree class and TreeNode structure!
+
+Nodes
+
+As in Assignment #4, you will create a node structure (named PersonRec) that represents a person's record. This time, though, the structure has four members. You cannot add any other member variables to the PersonRec structure.
+
+Members Variables of Person Record (PersonRec) Node
+
+Name	Data Type	Description
+name	char[20] 	Character array containing person's name
+bribe	int 	Amount of bribe (assumed to be whole number for purpose of program)
+lChild	PersonRec*	Pointer to next leaf to the left (or to NULL if no leaf to the left)
+rChild	PersonRec*	Pointer to next leaf to the right (or to NULL if no leaf to the right)
+Chapter 8 discusses nodes, and the left child and right child components of a node.
+
+Also unlike Assignment #4, in this assignment the PersonRec structure also will have a four argument constructor, one argument for each member variable. Yes, structures, like classes, can have member functions, including constructors.  Here is the prototype for the constructor:
+
+PersonRec(char*, int, PersonRec*, PersonRec*); 
+
+CTree Class 
+
+You will create one class (named CTree) that represents the binary search tree. This class has only one member variable, root, whose data type is PersonRec* (a pointer to a PersonRec structure). The book discusses what a root is.
+
+Your CTree class will have a constructor and destructor, and may have some or all of the member functions listed below. You do not need to use all of these member functions. I listed as many as I did because they seem logical to me.  
+
+The following table groups the functions by what they do. Additionally, note that, like Assignment #4, most of the functions are private, not public. The private functions are "helper" functions whose sole purpose is to assist other, publicly-accessible functions. One guideline of OOP programming is to make the members of your class as private as possible. Of course, some member functions of your class have to be public, or else you could never access the class, but the fewer the entry points into your class, the less chance for introducing bad data or other errors from outside the class. Following this principle, the public functions in the CTree class take no parameters, thus reducing the chances for "bad data." 
+
+Member Functions of CTree Class
+
+Name	Return Value	Parameter	Access	Description
+Constructor/Destructor
+
+Constructor	None	None	Public	Initializes the value of root.
+Destructor	None	None	Public	Deletes the dynamically creates nodes..
+State of Tree
+
+isEmpty	bool	None	Public	Returns true if there is at least one node, false is no nodes.
+isFull	bool	None	Public	Returns true if no more memory in free store to allocate, false if memory available. For this assignment, you can assume there is available memory in the free store. Therefore, this function always will return false. 
+Root	PersonRec*	None	Private	Returns the value of the root member variable (which is an address).
+Adding a Node to the Tree
+
+Add	None	None	Public	Adds node to the tree in the proper location by calling one of the helper functions BuildRoot, AppendLeft or AppendRight. See adding a node to the tree. 
+BuildRoot	None	char*, int	Private	Creates and inserts a new node in the tree at the root. Values of new node obtained from char* (name) and int (bribe) passed as parameters. See adding a node to the tree.
+AppendLeft	None	PersonRec*, char*, int	Private	Creates and inserts a new node in the tree to the left of the node pointed to by the first parameter (see adding a node to the tree). Values of new node obtained from char* (name) and int (bribe) passed as parameters.
+AppendRight	None	PersonRec*, char*, int	Private	Creates and inserts a new node in the tree to the right of the node pointed to by the first parameter (see adding a node to the tree). Values of new node obtained from char* (name) and int (bribe) passed as parameters.
+AddItem	None	PersonRec*&,  char*, int	Private	Called by Add for recursive algorithm to insert a node in the tree. See discussion below under "Recursive Algorithm."
+Functions to view nodes in Tree
+
+View	None	None	Public	Displays the nodes of the tree in order of the bribe amounts by calling DisplayTree helper function with root as the parameter. See viewing the nodes of the tree.
+DisplayTree	None	PersonRec*	Private	Prints to screen contents of tree or "List is empty" if there are no nodes.  The parameter passed to it is the root. See sample output in Assignment #3 (the output in this assignment will look the same). See viewing the nodes of the tree and traversal examples in Chapter 8. See also the comment on recursion.
+Adding a Node to the Tree
+
+You will use the Add member function to add nodes to the tree. The Add function first obtains by user input the name and bribe amount, through code such as the following:
+
+char aName[40];
+int aBribe;
+cout << "\nEnter the person's name: ";
+cin >> aName; // assumes no embedded spaces in name
+cout<< "\nEnter the person's contribution: ";
+cin >> aBribe;
+
+As explained in Chapter 8, binary search trees are specialized binary trees in which the data value (here the bribe amount) of every node in the tree is greater than any data value in its left subtree and less than any data value in its right subtree. If the tree is empty, then where the node belongs is easy; it must be the root node. In that case, you can call the BuildRoot function to dynamically create a new node and add it to the root of the tree.
+
+If the tree is not empty, then you have a choice between two different algorithms to traverse the tree, left or right, until you determine where the node belongs.
+
+Loop Algorithm
+
+The first alternative involves a loop. Initially, declare a local PersonRec* variable which I will call ptr and assign to it the memory location pointed to by root. The reason why you are creating this local variable instead of just using root is that you will be using ptr to traverse the tree. This requires changing the value of ptr. You don't want to use root for this purpose because root must stay pointing to the root node.
+
+Next, you create a while loop. The condition of the while loop is ptr does not equal NULL, the reason being that when ptr equals NULL, the node to which ptr is pointing must be a leaf, at which point you are finished traversing the tree and it is time to insert the new node. 
+
+In the loop, you check if the bribe amount entered by the user (aBribe) is more, less, or the same as the bribe amount pointed to by ptr.
+
+If they are equal, do not add the node. Binary search trees cannot contain duplicate data values. Just advise the user that this bribe amount has already been paid and end the function.
+
+If the bribe amount entered by the user (aBribe) is more than the bribe amount pointed to by ptr, then the new node will be to the right of the node pointed to by ptr.
+
+If the value of the rChild of the node pointed to by ptr is NULL, then the new node will be the right leaf of the node pointed to by ptr. In that case, you can call the AppendRight function to dynamically create a new node and add it to the right of the current node.
+
+If the value of the rChild of the node pointed to by ptr is not NULL, then you have to continue traversing the tree. Therefore, you move ptr so it is pointing to the node pointed to by rChild, and return to the top of the while loop.
+
+If the bribe amount entered by the user (aBribe) is less than the bribe amount pointed to by ptr, then the new node will be to the left of the node pointed to by ptr.
+
+If the value of the lChild of the node pointed to by ptr is NULL, then the new node will be the left leaf of the node pointed to by ptr. In that case, you can call the AppendLeft function to dynamically create a new node and add it to the left of the current node.
+
+If the value of the lChild of the node pointed to by ptr is not NULL, then you have to continue traversing the tree. Therefore, you move ptr so it is pointing to the node pointed to by lChild, and return to the top of the while loop.
+
+Recursive Algorithm
+
+The second alternative involves recursion. The Add member function, after obtaining user input for the name and bribe (see above), would all a private helper function, which we will call AddItem.
+
+The first argument is a PersonRec pointer that is passed by reference: PersonRec*&. That's right, a pointer that is passed by reference! Why is explained in section 7.11 of the book. The second and third arguments would be the name and bribe inputted by the user. Accordingly, the prototype of AddItem would be:
+
+void AddItem( PersonRec*&, char*, int);
+
+The AddItem function initially would be called by the Add function as follows:
+
+AddItem( root, aName, aBribe );
+
+The first argument is the root, the second and third arguments the name and bribe inputted by the user.
+
+Assuming the function header is:
+
+void CTree::AddItem( PersonRec*& ptr, char* name, int bribe )
+
+The algorithm for the function body would be as follows:
+
+If ptr is not NULL -
+
+If bribe is greater than the bribe in the node pointed to by ptr, call AddItem recursively, with the first argument being the rChild of the node pointed to by ptr (the second and third arguments being unchanged).
+
+Else if bribe is less than the bribe in the node pointed to by ptr, call AddItem recursively, with the first argument being the lChild of the node pointed to by ptr (the second and third arguments being unchanged).
+
+Else, bribe must be equal to the bribe in the node pointed to by ptr, in which case insertion is not allowed, and the function just returns and ends.
+
+Else (ptr is NULL), create a new PersonRec structure, and have ptr point to it.
+
+Once you understand recursion, this recursive algorithm really is easier to implement than the loop algorithm.
+
+Viewing the Nodes in the Tree
+
+You will use the View member function to view the nodes in the tree. The View function simply calls the DisplayTree function, with root as the parameter. The DisplayTree function actually does the work of displaying the nodes of the tree. 
+
+Chapter 8 of the book covers traversal. Since you want to display the nodes in order of the bribe amount, you should use inorder traversal. The only difference is that it displays the values in ascending order, whereas you want to display the values in descending order.
+
+Recursion
+
+Inorder traversal usually uses recursion, that is, the function, in its body, calls itself. Your DisplayTree function will use recursion similarly (the difference being that the display will be in descending rather than ascending order).
+
+For those of you who haven't used recursive functions before, you should review Chapter 7, which discusses recursion in detail. You don't need to be an expert on recursion to do this assignment, since the examples already show you how to call the functions recursively, but a basic understanding would be helpful, not just now but also in the future (e.g. 4 year college). There also is a PowerPoint presentation on recursion that you can download and recursion examples.

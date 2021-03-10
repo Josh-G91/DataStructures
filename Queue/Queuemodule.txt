@@ -1,0 +1,116 @@
+
+CSIT 836
+Introduction to Data Structures
+Instructor: Jeff Kent
+Module #4 - Queue
+Module #3 concerned a stack. This lecture will concern a similar, but different data structure, a queue.
+
+Queue
+
+Queues are discussed in Chapter 5, section 5.3. Queues are "first in, first out." A real world example of a queue is that short, fast-moving line you wait in to speak to the friendly folks in Admissions. The first person in line is the first person to be served.
+
+Section 5.3 explains the special terminology of queues, Dequeue, Enqueue and Front. You enqueue when you go to the end of the line. A short time later (in geologic time anyway), when you are first in line, you are at the front of the queue. Finally, when the Admissions employee motions you over with that finger that tells you you're number 1, you dequeue the line to speak to Admissions. 
+
+As with stacks, you also want to test for IsEmpty and IsFull. You don't want to conduct a Dequeue or Front operation on a queue that is empty (contains no data), or an Enqueue operation on a queue that is full. 
+
+The comments on what empty and full mean in the context of a stack also apply to a queue, with one exception. You know when a stack is full because the top element is also the last element of the array that has been assigned data from the stack. However, with a queue, the front element is the first, not last element of the array that has been assigned data. Therefore, you need to also keep track of the rear element of the array that has been assigned data. Thus, instead of one top variable to keep track of the state of a stack, you have two variables, front and rear, to keep track of the state of a queue.
+
+Circular or Ring Buffers
+
+Storing data in an array is more problematic for a queue than it is for a stack. In a stack, items are removed from back to front. Therefore, the first element of a stack always will have a zero index, and if the last index (number of elements - 1) is occupied, then the stack is full.
+
+However, in a queue items are removed from front to back. Therefore, the first element of a queue may have a larger than zero index. Indeed, if the last index (number of elements - 1) is occupied, that could be the only item in the queue, as opposed to a full queue.
+
+Accordingly, queues are commonly implemented with a circular, or ring, buffer. The name "ring" refers to the way the vector is treated as a circular array of items. The book discusses circular queues starting at page 289.
+
+When do the values of front and rear change?
+
+The variable front is incremented when you dequeue. The variable rear is incremented when you enqueue. Neither front nor rear are ever decremented.
+
+What happens when you reach the last index of the array?
+
+While normally you increment front when you dequeue and rear when you enqueue, when front or rear are at the last index of the array, you can't increment them, or they will point to an index out of range of the array. In a circular or ring queue, when front or rear are at the last index of the array, incrementing them results in their "wrapping around" the end of the array and pointing to the first index (zero).
+
+A simple if statement (similar to that at page 289) can be used to determine when, while enqueueing, rear wraps around the end of the array (the following code snippets assume MAX is a constant indicating the number of elements in the array):
+
+if (rear == MAX - 1)
+   rear = 0;
+else
+   rear++;
+Another alternative, suggested at page 289, is: rear =  (rear + 1) % MAX;
+
+The same logic applies to front when you dequeue.
+
+Why do you need an empty slot in circular queue?
+
+Normally front points to the index of the first item in the queue, and rear to the index of the last item of the queue. However, the problem, as discussed at page 289 and shown in figures 5.11 and 5.12, is the difficulty in distinguishing between a full queue from an empty queue.
+
+Here's an additional example. Assume the queue has one item at index 0. Therefore, the values of both front and rear are 0. When that one item is dequeued, front is incremented, and the queue is now empty, with  front being 1, rear being 0.
+
+Now, assume instead a full queue which has wrapped around. If the front of the queue is 1, then the rear of the queue is 0. However, as discussed in the preceding paragraph, these are the same values as when the queue is empty. Thus, you can't tell through code whether the queue is empty or full.
+
+Two solutions are discussed there. The first alternative involves using a count variable. The second alternative involves using front to indicate the index of the array element before the front element of the queue, rather than the index of the front element itself. You will use this second alternative in Assignment #3.
+
+This implementation of a circular queue requires that one slot in the array will always be empty, even when the queue is full. Therefore, the size of the array must be one more than the number of elements you need. Thus, if you want an array to hold information on up to 5 students, the number of elements must be 6.
+
+Starting values of front and rear
+
+As discussed above, front indicates the index of the array element before the front element of the queue. However, the queue is empty when it is created; there is no front element.
+
+The logical starting value for front is MAX - 1 (the last element). This also is the logical starting value for rear. HINT: The constructor is a good place to initialize these starting values.
+
+There is a simple test to prove that the starting values for front and rear should be the index of the last element (MAX - 1). When you add (enqueue) two elements to the queue, front is still MAX - 1, but rear is now 1. When you dequeue one item, front is now 0, and rear still is 1. This is correct, since front indicates the index of the array element before the front element of the queue (here 1), and rear indicates the index of the last element of the queue (also 1).
+
+Empty vs. Full
+
+The reason why we needed an empty slot in circular queue was the problem in distinguishing between empty and full, so let's make sure we don't still have that problem.
+
+When the queue is created, it is empty, and as discussed above, the starting values for front and rear both are initialized to the index of the last element, MAX - 1. At this point, front == rear. Thus, as the book discusses and gives code examples at pages 291-293, the queue is empty when front == rear.
+
+There is a simple test to prove that the the queue is empty when front == rear. In the example above for the starting values of front and rear, when you add (enqueue) two elements to the queue, and then dequeue one item, front is 0, and rear is 1.When you dequeue the next, and last, item, the queue is empty, and front and rear now both are 1. Thus, front == rear, and the queue is empty.
+
+Conversely, since one slot in the array will always be empty, even when the queue is full, the queue is full when :rear is one less than front. However, because the queue is circular, you also need to account for rear being at, for example, the last element (MAX - 1), and front being at 0. In that event, the queue is full; there being only one empty slot, index 0. However, rear is not one less than front. Thus, as the code at pages 291-293 indicates, the queue is full when:  (rear + 1) % MAX == front.
+
+Enqueueing and dequeueing
+
+As already discussed above, front is incremented when you dequeue, rear is incremented when you enqueue, and neither front nor rear are ever decremented.
+
+The algorithm for wrapping front and rear around the queue also was discussed above Each time a new item is enqueued, the value of rear is incremented to index the next element in the ring, and the item is stored at this position. When rear equals MAX - 1, the next invocation of Enqueue resets rear to 0. The statement that causes rear to rotate around the ring is:
+
+rear = (rear + 1) % MAX
+
+Similarly, each time a new item is dequeued, the value of front also is incremented to index the next element in the ring. When front equals MAX - 1, the next invocation of Dequeue resets front to 0. The statement that causes front to rotate around the ring is:
+
+front = (front + 1) % MAX
+
+Front function
+
+The Front function returns the value of the first item in the queue. Since front does not indicate the index of the front of the queue, but instead the empty slot just before it, returning the value at the front of the queue, using the Front function, similarly involves looking at the index "after" front, but without changing the value of front. That index then is [(front + 1) % MAX].
+
+Class Member Variables
+
+As with the Stack class, variables in Queue classes have two purposes, holding data and maintaining "state." The variables that maintain state are front and rear. The variable that holds the data will be an array of the type specified in Assignment #3.
+
+The table below summarize the member variables of the queue class. 
+
+Name	Data Type	Description
+front	Integer	Index "before" the first element of array that holds a value of the queue
+rear	Integer	Index of last element of array that holds a value of the queue
+data	Same as array	Holds values being placed on the queue.
+Member Variables of Queue Class
+ 
+In Assignment #3 the data will be an array of Passenger structures, which is defined in cqueue.h as:
+ 
+struct Passenger {
+char name[80];
+};
+Queue Class Member Functions
+
+Name	Return Value	Parameter	Purpose
+Constructor	None	None	Initializes front and rear. Optionally, you may also want to initialize the values of the data array to some default value.
+Enqueue	None	Same data type as array	Assigns the parameter (same data type as array) to the index following the existing rear element of the array and changes the rear variable.
+Dequeue	None	None	Changes the front variable.
+Front	Same data type as array	None	Returns the value (same data type as array) in the front index of array
+IsEmpty	bool	None	Returns False (zero) if there is at least one item of the queue in array, True (non-zero) if not.
+IsFull	bool	None	Returns True (non-zero) if all elements of the array contain items of the queue, False (zero) if not.
+Member Functions of Queue Class

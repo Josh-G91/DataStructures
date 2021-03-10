@@ -1,0 +1,99 @@
+
+CSIT 836
+Introduction to Data Structures
+Instructor: Jeff Kent
+Module #5 - Linked List 
+Assignment #4 concerns linked lists, which are covered in Chapter 6 of the book. As always, this lecture is a supplement to, not a substitute for, the reading the book.
+
+As in Assignment #3, the data element is a structure. This time, though, the data element, a PersonRec structure, has more than just one member variable.
+
+Each data element, or node, will be created by dynamic memory allocation and connected in a linked list, the list being represented by a PersonList class. This time, though, the node will not be automatically inserted at the beginning (queue) or end (stack) of the list, but will be inserted wherever in the list is indicated by the bribe amount. 
+
+Nodes
+
+Each node is an instance of a PersonRec structure. This structure has three members:
+
+Members of Person Record (PersonRec) Node
+
+Name	Data Type	Description
+name	char[20] 	Character array containing person's name
+bribe	int 	Amount of bribe (assumed to be whole number for purpose of program)
+link	PersonRec*	Pointer to next PersonRec node (or to NULL if no next node)
+Declare the PersonRec structure in the PersonList class .h file and implement the PersonRec structure in the PersonList class .cpp file.
+
+PersonList Class Member Variable
+
+You will create one class (named PersonList) that represents the list of person names and bribe amounts. This class has only one member variables, head, a PersonRec pointer that points to the first node, or to NULL if the list contains no nodes. 
+
+You don't need a member variable for linkage between the first node and the second node, the second node and the third node, and so on, because each node already has a member variable, link, that performs that task. However, you do need to link the first node to the start of the list. That is the purpose of the head member variable of PersonList .
+
+The PersonList class has no data member variables because, instead of using a static array, this program uses linked lists of nodes (here each a PersonRec structure) created by dynamic memory allocation. The nodes of course do have data members, name and bribe, in addition to the link variable already discussed.
+
+Initially, head should point to NULL, as there are no nodes. Of course, this will not happen automatically, You will need to write code in the constructor. 
+
+The memory locations to which head points will not remain constant. As discussed below in adding nodes, the first time you add a person record, head will point to the new node. Additionally, if you insert a record before the first node (because of a larger bribe), head will now point to the new first node. Finally, when the application ends and the PersonList destructor is invoked, as discussed below in connection with the destructor, the dynamically added nodes in the list are destroyed one by one, from front to back, head will point to the next record, and finally, when the last node is destroyed, to NULL.
+
+Class Member Functions (Public)
+
+The PersonList class has only four public member functions, including the constructor and destructor.
+
+The primary purpose of a constructor is to initialize class member variables. In Assignment #3, the one class member variable is a pointer. When a PersonList class instance is created, the head pointer does not point to a node because no nodes have yet been added. Therefore, in your constructor, you should assign the constant identifier NULL to this pointer. 
+
+You will use the PersonList destructor to delete nodes. In Assignment #3 you will not be deleting individual nodes as a choice during the running of the program. Instead, the nodes will be deleted when the program is finishing. In this regard, in Assignment #3, your class allocates memory dynamically each time it adds a new person to the list by creating a new node for that person. Therefore, at the end of your program, you need to deallocate memory for all the nodes you created with the program.  You will take care of this possibility in your destructor. The destructor simply starts at the beginning of the list and deletes the nodes, one by one, until the last node is deleted.
+
+The other two public member functions, which are called in the driver file (see driver file code) are:
+
+void AddToList (void) - This function creates a new node, assigns its data members name and bribe the values obtained from user input, and adds the node to list by calling a helper function. See "Adding a Node to the List" below.
+
+void ViewList (void) - This function prints to the screen the contents of list or "List is empty" if there are no nodes. See the sample output.
+
+Class Member Functions
+
+While the PersonList class may have only four public member functions, you may declare and implement as many private member functions as you need. Such private member functions also are called "helper" functions, whose sole purpose is to assist other, publicly-accessible functions. One guideline of OOP programming is to make the members of your class as private as possible. Of course, some member functions of your class have to be public, or else you could never access the class, but the fewer the entry points into your class, the less chance for introducing bad data or other errors from outside the class. 
+
+The following table lists possible helper functions of the PersonList class, grouped by what they do. I am not requiring that you use any of these functions. If you find one or more unnecessary to your implementation, then don't use them. I am just listing helper functions you might find helpful.
+
+Some of the function descriptions refer to currPtr. This is a temporary PersonRec* variable (not a class member variable), sometimes initially set to the same address as head, that you can use to "travel" the linked list, from front to back, and point to a node in the list. You use currPtr instead of head to travel the linked list because head needs to stay pointed to the start of the linked list. With currPtr, you can compare the amount of the bribe in that node with the amount of the bribe in the node to be added, or print out the contents of the entire linked list.
+
+Possible Helper Functions of PersonList Class
+
+Name	Description
+Functions that return state of list
+
+IsEmpty	The list is empty if it has no nodes. head will point to NULL if there are no nodes. Otherwise it will point to the first node.
+EndOfList	You are at the end of the list when the value of currPtr is NULL, which is true if the list is empty or currPtr was pointing to the last node before it was advanced.
+Functions that move pointer in list
+
+Advance	This function moves currPtr to point to the next node, or NULL if currPtr was pointing to the last node before it was advanced. This assumes and therefore you need to test that currPtr was not already pointing to NULL before it was advanced.
+Reset	This function resets currPtr to point to head.
+PrevPtr	This function returns a pointer to the node before the one pointed to by currPtr. This assumes the list is not empty and that currPtr does not point to the first node.
+Functions that insert node in list
+
+InsertBefore	Inserts the new node pointed to by its argument in the list before another node pointed to by currPtr. See adding node to list below. 
+InsertAfter	Same as InsertBefore except new node inserted at the end of the list after the last node. See adding node to list below. 
+Functions to view/return nodes
+
+CurrRec	This function returns a PersonRec object whose name and bribe members have the same values as that of the node to which currPtr points. This assumes and therefore you need to ensure before calling this function that currPtr points to a node.
+Adding a Node to the List
+
+You will use the AddToList member function to add nodes to the list. Unlike with a stack or queue, you cannot assume that the node will be added either at the beginning or at the end of the list. Where the node is added depends on the amount of that person's bribe. The higher the bribe, the higher up on the list. Ties (bribe amount the same) are broken by the person added earliest to the list being higher on the list.
+
+The AddToList function first obtains by user input the name and bribe amount, through code such as the following:
+
+char aName[20];
+int aBribe;
+cout << "\nEnter the person's name: ";
+cin.getline(aName, 20); 
+cout<< "\nEnter the person's contribution: ";
+cin >> aBribe;
+
+The AddToList function then creates a new PersonRec node using dynamic memory allocation, and assigns to its name and bribe data members the values just inputted by the user. As stated in the assignment, you do not need to do error-checking for whether the user entered a name, or a positive whole number for a bribe.
+
+The final task of the AddToList function is to insert the new node at the correct place in the list. This is the hard part, though quite doable. Let me give you some hints.
+
+The way I did this is to have AddToList call one of two helper functions, InsertBefore or InsertAfter, and pass to InsertBefore or InsertAfter two parameters, the PersonRec node to be inserted in the list, and a PersonRec* pointing to where in the list the new node will be inserted before or after (as the case may be). Whether AddToList calls InsertBefore or InsertAfter depends on where in the list the node will be inserted. There is more than one logical approach; one that works is:
+
+If the list is empty, then the node necessarily will be the first, so it really does not matter whether you use InsertBefore or InsertAfter. 
+If the bribe of the member to be added is lower than the lowest bribe in the list, you will use InsertAfter to insert the node after the last node  (hint: the PrevPtr helper function might be useful).
+Otherwise, you will use InsertBefore to insert the node before the first node in the list whose bribe member is lower than the bribe of the member to be added (hint: the PrevPtr helper function might be useful here also).
+You determine where in the list the new node should go by going through the list from the beginning, using the Reset function to point the currPtr to the head of the list. You will compare the bribe amount of the new node with the bribe amount of the current record (CurrentRec), and if the bribe amount of the new node is not larger, moving currPtr to point to the next node using the Advance function. You continue the comparison of the bribe amount of the new node with the bribe amount of the current record (CurrentRec) until either the bribe amount of the new node is larger (when you call InsertBefore) or you are at the end of the list (EndOfList), in which case you insert the new node at the end (by calling InsertAfter).

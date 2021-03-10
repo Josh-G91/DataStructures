@@ -1,0 +1,257 @@
+
+CSIT 836
+Introduction to Data Structures
+Instructor: Jeff Kent
+Module #3 - Stack
+This class is named "Introduction to Data Structures." An example of data is, in a student database application, the names and social security numbers of the students. The "structure" in data structure refers to an object that contains and (usually) permits the manipulation of the data in a consistent way. 
+
+One data structure with which you previously should have worked is an array. The array stores the data, which may be integers, characters, or even objects. You can access the data in the array through the array index, which consistently starts with zero and ends with one less than the length of the array.
+
+While an array is a data structure, it is not a very sophisticated one. It only contains data. It has no built-in logic or functions. By contrast, the data structure you will be creating for Assignment #2, a Stack class, will have built-in logic and functions. 
+
+Stack
+
+Stacks are discussed in Section 5.1 of the book. Please read the book. This handout may make the book easier to understand, but it is not a substitute for reading the book.
+
+A stack is "last in, first out." A real world example of a stack is a stack of dishes. You stack the dishes on top of each other, so the first dish you placed on the stack is at the bottom of the dish stack, and the last dish you placed on the stack is at the top of the dish stack. Since you would take dishes off the top of the stack, the last dish put on the stack is the first dish taken off the stack. 
+
+Section 5.1 also explains the special terminology of stacks. Push, Pop and Top. You push an item on a stack as you would place a dish on the top of the dish stack. You pop an item off the stack as you would take a dish off the top of the dish stack. The Top item of a stack would be the last dish you placed on the stack.
+
+Section 5.1 also discusses IsEmpty and IsFull. You don't want to conduct a Pop or Top operation on a stack that is empty (contains no data), or a Push operation on a stack that is full. IsEmpty returns true if the stack is empty, false if the stack is not empty. Similarly, IsFull returns true if the stack is full, false if the stack is not full.
+
+However, what does empty and full mean in the context of a stack? It depends on how you store your data. If, as in Assignment #2, you store your data in an array, the array is empty when no data is stored in it, and the array is full when each of the elements of the array contains data for the stack (except for the last element, so IsFull would return true. 
+
+The following examples concern a 4 element character array. As in Assignment #2, the character array in this example is not a C-string, so there is no need for a null character at the end. The array just consists of characters entered by the user.
+ 
+In the first example, the user enters 'J'. 'e', 'f', 'f' and then presses Enter to terminate input; the 4 element array is full.
+'J'	'e'	'f'	'f'
+ 
+In the second example, the user just presses Enter key, not inputting any characters; the 4 element array is empty.
+ 	 	 	 
+ 
+In the third example, the user enters 'd', 'u', 'h' and then presses Enter to terminate input; the 4 element array is not full and also not empty.
+'d'	'u'	'h'	 
+ 
+The Stack is a very important data structure. For example, the operating system uses stacks for, among other things, function calls.
+Classes
+
+As stated at the start of this lecture, the "structure" in data structure refers to an object. In C++ programming, that object is a class. You should already know about structures from CSIT 839. Classes are quite similar to structures.
+
+You already know about classes if you have taken CSIT 840. If not, don't worry; I will teach you all you need to know about classes, starting with this handout.
+
+Classes are introduced in Section 2.3 of the book. Classes consist of variables and member functions, and are written using specification and implementation files. Additionally, instances of the class are created with constructors. These concepts now will be discussed.
+
+NOTE: The examples in the book use template classes, which is a type of class. Template classes are explained in Section 4.2. You don't need to use template classes, but if you do, such as for consistency with the book examples, then the Template Classes handout explains how to use template classes in multi-file projects.
+
+Class Member Variables
+
+A class, just as a structure, usually contains variables. The purpose of a class variable usually is to either store data or maintain "state." 
+
+Regardless of which purpose, class variables normally are private. This means they cannot be accessed from outside of the class, such as from main. Instead, you read from or write to variables using member functions.
+
+Data usually consists of values on which your class operates. In Assignment #2, the data on which your stack class operates are the characters inputted by the user. The first character inputted is the first item of the stack, the second character the second item of the stack, and so on.
+
+These inputted characters need to be stored somewhere. In Assignment #2, they are stored in a character array. However, this is not the only alternative. In later assignments, you will store data in linked lists, trees, etc.
+
+Since in Assignment #2 the characters inputted by the user are stored in a character array, a character array therefore should be a member variable of the Stack class. As for the length of the array, the assignment provides that the user will not input more than 20 characters, including the null character.
+
+"State" refers to the condition of the stack at a given point. The state of the stack of which you need to keep track is its "top", that is, the index of the the last element in the array to which you assigned data. The Push, Pop, Top, IsEmpty and IsFull functions all require knowing the location of the stack's top.
+
+Therefore, your stack class should include a member variable to represent the index of the "top" element. The data type of this variable logically would be an integer since an array index always is an integer even if the data type of the array element is a character, float, object, or some other non-integer data type.
+
+Note: The top index is not necessarily the last element of the array. Rather, its index is the last element of the array in which you assigned data that belongs to the stack. Thus, for a 20 element array, if you placed the characters 'j', 'e', and 'f' on the stack, the index of the last element of the array is 19, but the index of the top element of the stack is 2. 
+
+The index of the top element does not remain constant. Instead, that index will change, incrementing each time you add (Push) an element on to the stack, and decrementing each time you take off (Pop) an element off of the stack.
+
+While it may be intuitive that you increment top when you push and decrement top when you pop, less intuitive is the starting value of top. This issue is discussed below in connection with the Constructor.
+
+The following table summarizes the member variables of the stack class. 
+
+Member Variables of Stack Class
+
+Name	Data Type	Description
+top	Integer	Index of the last element of array that holds a value of the stack
+data	Character array	Holds values being placed on the stack
+Class Member Functions
+
+Classes also have member functions. The member functions perform the operations of the class. The operations of a stack are discussed above. The following table summarizes the member functions of the stack class. 
+
+Member Functions of Stack Class
+
+Name	Return Value	Parameter	Description
+Push	None	Character 	Assigns the parameter (a character) to the index one greater than the existing top index of the array and increments the top variable to the new index.
+Pop	None	None	Decrements the top variable. Does not return the top value.
+Top	Character	None	Returns the value in the top index of array.
+IsEmpty	bool	None	Returns False (zero) if there is at least one item of the stack in array, True (non-zero) if not.
+IsFull	bool	None	Returns True (non-zero) if all elements of the array contain items of the stack, False (zero) if not.
+None of these member functions change the number of elements of the array. Push may change the data at a given element in the array. Push and Pop also change the value of the variable in your class that marks the last element of the array for the purposes of the stack. However, the index of the first element of the array is always zero and the index of the last element of the array is always its length minus 1. 
+
+For example, if the value of a stack stored in a 20 element array is { 'j', 'e', 'f', 'f' }, the value of Top is 3, though the index of the last element of the array is 19. If we then pop the stack, the value of top changes to 2, though the value at index 3 (the second f) may not change, and the index of the last element (19) definitely does not change. 
+
+The purpose of IsEmpty and IsFull is to prevent your program from crashing. Your program likely will crash if you pop or check (using the Pop or Top function) the top element of an empty stack. Therefore, you should check IsEmpty before you perform those operations. Your program also may crash if you try to push, using the Push function, an element on to a full stack. Therefore, you should check IsFull before performing this operation. The data type of the return value of IsEmpty and IsFull is Boolean, returning either true or false
+
+Constructor
+
+In addition to the member functions discussed above, each class has another, special kind of member function called a constructor. The purpose of a constructor is to create an instance of a class.
+
+You don't need to define a constructor. If you don't, then when you create an instance of a class, C++ will invoke the "default constructor," which will create an instance of the class with all variables uninitialized. 
+
+However, uninitialized variables could be dangerous. At the start of your program, the value of top will be garbage, and therefore wrong. Thus, if after you create an instance of a stack class and check the value of the member variable top using the Top member function, the value returned will be unreliable.
+
+Therefore, you should define a constructor. The constructor does not need any arguments. However, its body  should define the beginning value for top. You may also want to initialize the values of the character array to some default value, such as zero.
+
+What should be the beginning value for top? If the value of top is the index of the last element of the array in which you assigned data that belongs to the stack, then 0 is not a good starting value, because 0 would indicate one element is already in the stack, but at the start the stack is empty. -1 may be a good choice. Since -1 is not a valid value for the index of the array, it could not be confused with an index value. Additionally, when the first value is added to the stack, and top is incremented, its value then would be 0, which would correctly indicate that the stack contains one element.
+
+Using Header and Implementation Files to Create a Class
+
+Your stack class will be described in two files: (1) A "header" file that has a .h extension and (2) an "implementation" file that has ( in C++) a .cpp extension. The book covers these two types of files in Chapter 2, section 2.3. The header file, often also referred to as the "specification" file, tells "what the class does", the implementation file "how the class does it." 
+
+Next is partial code for the header file for the stack class. The code is a bold type and my annotations, contained in code comments, are italicized.
+
+// cstack.h, the code for specification file for stack class
+
+class CStack {
+ 
+/*
+class is a keyword telling C++ a class is being defined.
+CStack is the name of the class. Any legal name will do,
+though the name should describe the class. The open curly
+brace starts the body of the class, just as it does a structure
+*/
+ 
+public:
+ 
+/* 
+Public is keyword meaning accessible from outside the class.
+Class members, whether variables or functions, are private
+unless specifically declared otherwise. The following member
+functions are public, so the public keyword is necessary
+*/
+ 
+/*
+Now we start defining the member functions. 
+Note that they are prototypes only; none have a body. 
+The body is supplied in the implementation file
+*/
+ 
+CStack();    // Constructor. Always public
+bool IsEmpty();  // this function could be private
+bool IsFull();      // ditto
+ 
+// here you would continue to define (prototype) the additional member functions
+ 
+private:
+ 
+/* 
+Private is a keyword meaning not accessible from outside the class.
+Member variables almost always are private. 
+Next, the member variables are declared
+*/
+ 
+int top;
+char data[21];
+};
+ 
+/*
+The close curly brace and semicolon mark the end of the class body,
+just as they do with a structure
+*/
+Next is partial code for the implementation file for the stack class. Once again, the code is a bold type and my annotations, contained in code comments, are italicized.
+
+// cstack.cpp, the code for implementation file for stack class
+
+#include "cstack.h"
+
+/* 
+You need to include cstack.h to supply the prototypes.
+You also may need to include standard header files such as
+iostream if your implementation of the member functions
+use standard library functions such as cin and cout
+*/
+ 
+bool CStack::IsEmpty () 
+{
+// code goes here. You didn't think I'd give it away?
+} 
+ 
+/*
+This is the same IsEmpty function that was prototyped in cstack.h.
+The difference is the insertion before IsEmpty of CStack, which is the name
+of the class of which IsEmpty is a member, and ::, the scope resolution operator.
+This insertion specifies that IsEmpty is a member of the class whose name precedes
+the scope resolution operator (CStack). Without CStack:: the compiler would
+assume IsEmpty is just a regular function that does not belong to any class.
+*/
+ 
+/*
+here you would continue to implement the other member functions 
+prototyped in cstack.h, including the constructor.
+*/
+ 
+The implementation file does not include any member variables. They already are defined in the header file; no additional information is needed. By contrast, the header files had only the prototypes of the member functions. Therefore, they needed to be completed (the statements in their bodies) in the implementation file.
+ 
+Additionally, the implementation file does not need the public or private keywords. The header files specifies whether a member variable or function is public or private.
+ 
+Finally, unlike the header file, the implementation file does not end with a close curly brace and a semicolon. Rather, it ends with the close curly brace ending the body of the last function to be implemented.
+Driver
+
+Neither the header nor the implementation file for either class contains a main function. As you know, a C++ program cannot run without one (and only one) main function. Therefore, your project will include, in addition to a header and implementation file for each class (the stack and the queue), a "driver" file to test the project. A driver is a .cpp file used to test your project, and it is the one (and only) file in your project to have the main function.. 
+
+Below is partial code (I'm not going to give it all away) for the driver file. As before, the code is a bold type and my annotations are italicized. 
+
+// test.cpp, the code for driver file 
+
+#include "cstack.h"
+#include <iostream>
+#include <cstring>
+using namespace std;
+ 
+/* 
+You need to include cstack.h because the driver file refers to the CStack class.
+You also need need to include standard header files iostream and cstring because
+the driver file uses standard library functions such as cin and cout and C-string functions also
+*/
+bool isValidExpression (CStack&, char*);
+
+/*
+This is the prototype of a function implemented later in this file
+(this function is not a member function of any class) that determines
+if the expression that is its second parameter is a valid G++ expression
+and returns true if the expression is valid, false otherwise. This determination
+is made using the CStack class, an instance of which is the first parameter.
+That parameter is declared by reference but also could be declared by value.
+*/
+
+int main (void)    // The driver file has the main function 
+{
+char expression[21];    // allocate memory for user string input
+cout<< "Enter an expression: ";
+cin >>expression;
+CStack stack1;    // creates an instance of a stack (stack1) using class constructor
+
+if (isValidExpression (stack1, expression))
+ 
+/* This calls the isValidExpression function (which you still need to write) to
+fill the data array of the stack. The parameter is the stack instance stack1 */
+ 
+cout << "\nIt's a valid expression";
+else
+cout << "\nIt's NOT a valid expression";
+return 0;
+}
+ 
+/* This ends the main function. Now we (you) have
+to write the isValidExpression function. I'll give you
+the function header, and then some hints. */
+ 
+bool isValidExpression (CStack& stackA, char* strExp)
+{
+// code goes here
+}
+ 
+// end of driver file
+ 
+Hint: If a character is a left character, { [ (, then it is put on the stack. If the character is a right character } ] ), then it is compared to the character (necessarily a left character) on the top of the stack. I could give you more hints, but that would take the fun out of the project. Of course, you can ask questions in the Assignment #1 discussion on the class website.
+Multi-File Projects
+
+Building and running a multi-file project is different than if your program uses only one file. See the Console Projects - Visual C++ .NET or Console Projects - Visual C++ 6.0 under the Information tab at http://www.genghiskhent.com for instructions for building a multi-file project in Visual C++, version 6 or .NET. Also, if you choose to use template classes, as do the book examples, then the Template Classes handout explains how to use template classes in multi-file projects.
